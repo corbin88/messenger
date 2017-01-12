@@ -18,3 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+
+Route::get('/conversations', 'ConversationController@index');
+
+Route::get('/conversations/{userID}', 'ConversationController@show');

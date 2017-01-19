@@ -30,6 +30,6 @@ class User extends Authenticatable
     //Relationships
     
     public function conversations(){
-        return $this->hasMany('App\Conversation','conversation_participants', 'user_id', 'conversation_id');
+        return $this->belongsToMany('App\Conversation','conversation_participants', 'user_id', 'conversation_id');
     }
 }

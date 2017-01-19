@@ -12,7 +12,7 @@ class Conversation extends Model
 
 	//Relationships
 	public function participants(){
-		return $this->belongsToMany('App\User','user_id', 'conversation_id');
+		return $this->belongsToMany('App\User' ,'conversation_participants','conversation_id','user_id');
 	}
 
 	public function messages(){

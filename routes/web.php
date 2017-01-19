@@ -17,8 +17,15 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::post('/message/{id}', 'MessageController@store');
+
 Route::get('/home', 'HomeController@index');
 
 Route::get('/conversations', 'ConversationController@index');
 
+//You need to use conversation id for conversations and not user id
+
+Route::post('/conversations/{userID}', 'ConversationController@startConversation');
+
 Route::get('/conversations/{userID}', 'ConversationController@show');
+

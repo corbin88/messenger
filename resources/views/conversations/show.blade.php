@@ -28,6 +28,7 @@
                 </div>
                 <div class="panel-body">
                     <ul class="chat">
+                        @foreach($messages as $message)
                         <li class="left clearfix"><span class="chat-img pull-left">
                             <img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" />
                         </span>
@@ -37,21 +38,21 @@
                                         <span class="glyphicon glyphicon-time"></span>12 mins ago</small>
                                 </div>
                                 <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare
-                                    dolor, quis ullamcorper ligula sodales.
+                                   {{ $message->body }}
                                 </p>
                             </div>
                         </li>
+                        @endforeach
                     </ul>
                 </div>
                 <div class="panel-footer">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url('message/'.$id) }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ url('message/'.$conversation->id) }}">
                         {{ csrf_field() }}
                         <div class="input-group">
                             <input id="btn-input" type="text" class="form-control input-sm"  name="message" placeholder="Type your message here..." />
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-warning btn-sm" id="btn-chat">
-                                    Send</button>
+                                    Send {{$conversation->id}} </button>
                             </span>
                         </div>
                     </form>

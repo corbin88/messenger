@@ -33,37 +33,18 @@ class ConversationController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Find a conversation between the user and another, or create it
+     * 
+     * @param  User   $user
+     * @return Response
      */
-    public function startConversation(Request $request, $recieverUserId)
-    {   
-
-        //Needs refactoring
-        $user = Auth::user();
-        $userWithConversationParticipants = $user->where(['id'=> Auth::user()->id])->with(['conversations.participants' => function ($query) use ($recieverUserId) {
-            $query->where(['id' =>  $recieverUserId]);
-        }])->get(); 
-
-        foreach ($userWithConversationParticipants as $userConversations) {
-            foreach ($userConversations['conversations'] as $userParticipants) {
-               $userParticipants['participants'];
-            }
-        }
-        if(empty($userParticipants))
-        {
-            $participantsIds = [$user->id, $recieverUserId];
-            $newConversation =  Conversation::create(['name' => "A private conversation."]);
-            $newConversation->participants()->attach($participantsIds);
-
-            return redirect('conversations/'.$recieverUserId);
-        }
-
-            return redirect('conversations/'.$recieverUserId);  
+    public function find(User $user, $recieverUserId)
+    {
+        //Need to refactor to use route model binding
+        $recievingUser = User::find($recieverUserId);
+        $conversation = Conversation::findOrCreateBetween(Auth::user(), $recievingUser);
+        return $this->show($conversation);
     }
-
 
     /**
      * Display the specified resource.
@@ -71,10 +52,11 @@ class ConversationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show( Conversation $conversation)
     {
-        //User::find($id);
+        $conversation->load('participants');
+        $messages = $conversation->messages()->with('sender')->latest()->take(5)->get()->sortBy('created_at');
+        return view('conversations.show', compact('conversation', 'messages'));
 
-        return view('conversations.show', compact('id'));
     }
 }

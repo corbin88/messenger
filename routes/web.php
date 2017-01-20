@@ -25,7 +25,6 @@ Route::get('/conversations', 'ConversationController@index');
 
 //You need to use conversation id for conversations and not user id
 
-Route::post('/conversations/{userID}', 'ConversationController@startConversation');
+Route::get('/conversations/{userID}', 'ConversationController@find');
 
-Route::get('/conversations/{userID}', 'ConversationController@show');
-
+Route::post('/message/{id}', 'MessageController@store');

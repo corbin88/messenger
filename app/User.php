@@ -32,4 +32,9 @@ class User extends Authenticatable
     public function conversations(){
         return $this->belongsToMany('App\Conversation','conversation_participants', 'user_id', 'conversation_id');
     }
+
+    public function privateConversations()
+    {
+        return $this->conversations()->where(['is_private' => 1])->pluck('id')->toArray();
+    }
 }

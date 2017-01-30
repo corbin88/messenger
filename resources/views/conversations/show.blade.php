@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.3.4.js"></script>
+
 <div class="container">
     <div class="row">
         <div class="col-md-12">
@@ -49,9 +53,9 @@
                     <form class="form-horizontal" role="form" method="POST" action="{{ url('message/'.$conversation->id) }}">
                         {{ csrf_field() }}
                         <div class="input-group">
-                            <input id="btn-input" type="text" class="form-control input-sm"  name="message" placeholder="Type your message here..." />
-                            <span class="input-group-btn">
-                                <button type="submit" class="btn btn-warning btn-sm" id="btn-chat">
+                            <input id="btn-input" type="text" class="form-control input-sm msg"  name="message" placeholder="Type your message here..." />
+                            <span class="input-group-btn ">
+                                <button type="submit" class="btn btn-warning btn-sm send-msg" id="btn-chat">
                                     Send {{$conversation->id}} </button>
                             </span>
                         </div>
@@ -61,7 +65,39 @@
         </div>
     </div>
 </div>
+<script>
+    var socket = io.connect('http://localhost:3000');
+    socket.on('message', function (data) {
+        //data = jQuery.parseJSON(data);
 
+        //Just console the message right now.
+        console.log(data.user);
+
+        $( ".chat" ).append( ' <li class="left clearfix"><span class="chat-img pull-left"><img src="http://placehold.it/50/55C1E7/fff&text=U" alt="User Avatar" class="img-circle" /></span><div class="chat-body clearfix"><div class="header"><strong class="primary-font">'+data.user+'</strong> <small class="pull-right text-muted"><span class="glyphicon glyphicon-time"></span>12 mins ago</small></div><p>'+data.message+'</p></li>' );
+
+      });
+    $(".send-msg").click(function(e){
+        e.preventDefault();
+        var token = $("input[name='_token']").val();
+        //var user = $("input[name='user']").val();
+        var msg = $(".msg").val();
+        if(msg != ''){
+            $.ajax({
+                type: "POST",
+                url: '{!! url('message/'.$conversation->id) !!}',
+                dataType: "json",
+                data: {'_token':token,'message':msg},
+                //success isn't working?
+                complete: function(data){
+                    console.log(data);
+                    $(".msg").val('');
+                }
+            });
+        }else{
+            alert("Please Add Message.");
+        }
+    })
+</script>
 <!-- Temporary style -->
 <style type="text/css">
 .chat

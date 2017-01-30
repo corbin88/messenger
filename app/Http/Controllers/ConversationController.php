@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Conversation;
 use App\User;
+use Redis;
+
 
 
 class ConversationController extends Controller
@@ -42,12 +44,13 @@ class ConversationController extends Controller
     {
         //Need to refactor to use route model binding
         $recievingUser = User::find($recieverUserId);
+        //Finds conversation between two users. If doesn't exist creates a new one.
         $conversation = Conversation::findOrCreateBetween(Auth::user(), $recievingUser);
         return $this->show($conversation);
     }
 
     /**
-     * Display the specified resource.
+     * Show conversation between two users.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -56,6 +59,7 @@ class ConversationController extends Controller
     {
         $conversation->load('participants');
         $messages = $conversation->messages()->with('sender')->latest()->take(5)->get()->sortBy('created_at');
+
         return view('conversations.show', compact('conversation', 'messages'));
 
     }

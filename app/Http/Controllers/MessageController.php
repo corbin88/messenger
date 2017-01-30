@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Message;
 use App\User;
+use Redis;
 use Auth;
 
 class MessageController extends Controller
@@ -25,13 +26,22 @@ class MessageController extends Controller
 	 */
 	public function store($id, Request $request)
 	{
-		Message::create([
+		$message = Message::create([
 			'body' => $request->input('message'),
 			'conversation_id' => $id,
 			//need to change sender_id to use $this->user->id;
 			'sender_id' => Auth::user()->id,
 			'type' => 'user_message'
 		]);
-		return redirect()->back();
+
+		$redis = Redis::connection();
+
+		$data = ['message' => $request->input('message'), 'user' => Auth::user()->name,
+		 'room' => $message->conversation_id];
+		$redis->publish('message', json_encode($data));
+
+		Redis::get('message');
+		response()->json([]);
+		
 	}
 }
